@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>ತಿಳಿ-ತಿಳಿಪದ</title>
+    <link rel="stylesheet" href="css/simple.min.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css" />
+</head>
+
+<body>
+    <header>
+        <h1>ತಿಳಿ-ತಿಳಿಪದ</h1>
+        <p>
+            A lightweight, alternate interface to the dictionary at
+            <a href="https://tilipada.org">ತಿಳಿ-ತಿಳಿಪದ</a>
+        </p>
+    </header>
+    <main>
+        <input type="text" id="searchInput" placeholder="Search..." />
+        <button onclick="searchWord()">Search</button>
+
+        <table id="resultTable" style="display: none">
+            <thead>
+                <tr>
+                    <th>English</th>
+                    <th>Kannada</th>
+                    <th>Meaning</th>
+                    <th>Example Usage</th>
+                </tr>
+            </thead>
+            <tbody id="resultBody"></tbody>
+        </table>
+    </main>
+    <footer>
+        <p>
+            Data sourced from
+            <a href="https://www.tilipada.org">tilipada</a>. No claims are
+            made about the ownership of the data.
+        </p>
+        <p>The data files used here are
+        <ul>
+            <li>
+                <a href="data/arime-2024_03_17_17_11_05.xlsx">data/arime-2024_03_17_17_11_05.xlsx</a>
+                <a href="data/arime-2024_03_17_17_11_05.csv">data/arime-2024_03_17_17_11_05.csv</a><a
+                    href="data/arime-2024_03_17_17_11_05.json">data/arime-2024_03_17_17_11_05.json</a>
+            </li>
+        </ul>
+        </p>
+        <p>The source code of this project is on <a href="">github</a></p>
+    </footer>
+</body>
+<script type="text/javascript">
+    var jsonData;
+
+    $(document).ready(function () {
+        $.getJSON("data/arime-2024_03_17_17_11_05.json", function (data) {
+            jsonData = data;
+            $("#searchInput").autocomplete({
+                source: Object.keys(jsonData),
+                minLength: 3,
+            });
+        });
+    });
+
+    function searchWord() {
+        var searchTerm = $("#searchInput").val().trim();
+        var resultBody = $("#resultBody");
+        resultBody.empty();
+
+        if (jsonData.hasOwnProperty(searchTerm)) {
+            var wordData = jsonData[searchTerm];
+            var row =
+                "<tr>" +
+                "<td>" +
+                searchTerm +
+                "</td>" +
+                "<td>" +
+                wordData.kan +
+                "</td>" +
+                "<td>" +
+                wordData.meaning.join(", ") +
+                "</td>" +
+                "<td>" +
+                wordData.example.join(", ") +
+                "</td>" +
+                "</tr>";
+            resultBody.append(row);
+            $("#resultTable").show();
+        } else {
+            $("#resultTable").hide();
+        }
+    }
+</script>
+
+</html>
